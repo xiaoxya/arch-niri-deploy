@@ -17,10 +17,32 @@ MOUNTED=0
 cleanup() {
   if (( MOUNTED )); then
     sync
-    umount -R /mnt 2>/dev/null || true
+    if umount -R /mnt 2>/dev/null; then
+      MOUNTED=0
+    else
+      warn "异常退出时未能自动卸载 /mnt，请检查占用后手动执行：umount -R /mnt"
+    fi
   fi
 }
 trap cleanup EXIT
+
+unmount_target() {
+  (( MOUNTED )) || return 0
+  info "正在把缓存数据写入磁盘……"
+  sync
+  if ! umount -R /mnt; then
+    error "自动卸载 /mnt 失败，当前仍有以下挂载或占用："
+    findmnt -R /mnt || true
+    return 1
+  fi
+  MOUNTED=0
+  if findmnt -R /mnt >/dev/null 2>&1; then
+    error "/mnt 下仍存在挂载点，为安全起见请勿重启。"
+    findmnt -R /mnt || true
+    return 1
+  fi
+  ok "目标系统已安全卸载。"
+}
 
 prompt_install_settings() {
   HOSTNAME_VALUE=$(prompt_default "主机名" "arch-niri")
@@ -119,7 +141,7 @@ main() {
   require_uefi
   [[ $(uname -m) == x86_64 ]] || die "仅支持 x86_64。"
   require_command lsblk awk wipefs sgdisk partprobe udevadm mkfs.fat mkfs.btrfs \
-    btrfs pacstrap genfstab arch-chroot blkid localectl getent
+    btrfs pacstrap genfstab arch-chroot blkid localectl getent findmnt sync umount
   check_network
   findmnt /mnt >/dev/null 2>&1 && warn "/mnt 已挂载；确认后会先卸载。"
 
@@ -134,7 +156,7 @@ main() {
     *) microcode_package=''; microcode_image=''; warn "未识别 CPU 厂商，将不安装微码包。" ;;
   esac
 
-  progress_init 8
+  progress_init 9
   progress_step "分区并格式化目标磁盘"
   partition_disk "$disk"
   format_partitions "$disk"
@@ -156,11 +178,13 @@ main() {
   configure_ustc_mirror /mnt
   genfstab -U /mnt > /mnt/etc/fstab
   configure_installed_system "$disk" "$root_partition" "$microcode_package" "$microcode_image"
+  progress_step "同步数据并安全卸载目标系统"
+  unmount_target
   progress_done "基础系统安装完成"
 
   banner "安装完成"
   ok "已得到纯 Arch 基础系统：网络、SSH、sudo、Btrfs/Snapper 和 systemd-boot 均已配置。"
-  info "卸载后可执行 reboot；登录后运行：/opt/arch-niri-deploy/install-niri.sh"
+  info "目标系统已经卸载，现在可以执行 reboot；登录后运行：/opt/arch-niri-deploy/install-niri.sh"
 }
 
 main "$@"
