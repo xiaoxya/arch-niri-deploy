@@ -1,0 +1,21 @@
+// Arch Niri Deploy - 主配置
+// 每个模块均可独立修改；保存后 Niri 会自动重新加载。
+
+include "config.d/environment.kdl"
+include "config.d/input.kdl"
+include "config.d/layout.kdl"
+include "config.d/startup.kdl"
+include "config.d/rules.kdl"
+include "config.d/binds.kdl"
+include "config.d/outputs.kdl"
+
+prefer-no-csd
+screenshot-path "~/Pictures/Screenshots/Screenshot %Y-%m-%d %H-%M-%S.png"
+
+hotkey-overlay {
+    skip-at-startup
+}
+
+animations {
+    slowdown 1.0
+}

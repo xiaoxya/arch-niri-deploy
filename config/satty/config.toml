@@ -1,0 +1,10 @@
+[general]
+copy-command = "wl-copy"
+early-exit = true
+focus-toggles-toolbars = true
+actions-on-enter = ["save-to-clipboard"]
+actions-on-escape = ["exit"]
+
+[font]
+family = "Noto Sans CJK SC"
+style = "Regular"

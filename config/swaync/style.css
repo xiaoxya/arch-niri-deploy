@@ -1,0 +1,35 @@
+* {
+  font-family: "Noto Sans CJK SC", sans-serif;
+  font-size: 13px;
+}
+
+.notification-row { outline: none; }
+
+.notification {
+  border: 1px solid #45475a;
+  border-radius: 12px;
+  margin: 6px;
+  padding: 0;
+  background: #1e1e2e;
+  color: #cdd6f4;
+}
+
+.notification-content { padding: 12px; }
+.summary { color: #89b4fa; font-weight: bold; }
+.body { color: #bac2de; }
+.time { color: #6c7086; }
+
+.control-center {
+  border: 1px solid #45475a;
+  border-radius: 14px;
+  background: rgba(30, 30, 46, 0.97);
+  color: #cdd6f4;
+  padding: 10px;
+}
+
+.widget-title { color: #cdd6f4; padding: 8px; }
+.widget-title > button, .widget-dnd > switch {
+  border-radius: 8px;
+  background: #313244;
+  color: #cdd6f4;
+}

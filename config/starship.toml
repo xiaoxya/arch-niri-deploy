@@ -1,0 +1,31 @@
+add_newline = true
+command_timeout = 1000
+format = "$directory$git_branch$git_status$python$rust$nodejs$docker_context$line_break$character"
+
+[directory]
+style = "bold blue"
+truncation_length = 4
+truncate_to_repo = false
+
+[git_branch]
+symbol = "git:"
+style = "bold mauve"
+
+[git_status]
+style = "bold yellow"
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+
+[python]
+symbol = "py:"
+
+[rust]
+symbol = "rs:"
+
+[nodejs]
+symbol = "node:"
+
+[docker_context]
+symbol = "docker:"

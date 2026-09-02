@@ -1,0 +1,16 @@
+color=1e1e2e
+font=Noto Sans CJK SC
+font-size=24
+indicator
+indicator-radius=90
+indicator-thickness=8
+ring-color=45475a
+key-hl-color=89b4fa
+text-color=cdd6f4
+inside-color=181825
+separator-color=00000000
+show-failed-attempts
+clock
+timestr=%H:%M
+datestr=%Y-%m-%d %A
+ignore-empty-password

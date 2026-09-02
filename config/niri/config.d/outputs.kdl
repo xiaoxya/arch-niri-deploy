@@ -1,0 +1,6 @@
+// 使用 `niri msg outputs` 查看显示器名称，然后按需添加：
+// output "eDP-1" {
+//     mode "1920x1080@60"
+//     scale 1.0
+//     position x=0 y=0
+// }

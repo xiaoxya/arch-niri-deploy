@@ -1,0 +1,22 @@
+window-rule {
+    geometry-corner-radius 8
+    clip-to-geometry true
+    draw-border-with-background false
+}
+
+window-rule {
+    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    open-floating true
+}
+
+window-rule {
+    match app-id=r#"^(pavucontrol|nm-connection-editor|blueman-manager)$"#
+    open-floating true
+    default-column-width { fixed 760; }
+    default-window-height { fixed 560; }
+}
+
+window-rule {
+    match app-id=r#"^(org\.keepassxc\.KeePassXC|org\.gnome\.World\.Secrets)$"#
+    block-out-from "screen-capture"
+}
