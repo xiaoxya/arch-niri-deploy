@@ -1,27 +1,35 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-list_install_disks() {
-  lsblk -dpno NAME,SIZE,MODEL,TYPE | awk '$NF == "disk" {print}'
-}
-
 select_disk() {
   local -a disks=()
-  local line selection
+  local selection index disk size model transport serial
   mapfile -t disks < <(lsblk -dpno NAME,TYPE | awk '$2 == "disk" {print $1}')
   ((${#disks[@]} > 0)) || die "未发现可用磁盘。"
 
-  info "可用磁盘："
-  list_install_disks
+  info "已扫描到以下本地磁盘：" >&2
+  printf '\n  %-4s %-16s %-10s %-24s %-8s %s\n' \
+    "编号" "设备" "容量" "型号" "接口" "序列号" >&2
+  printf '  %s\n' '────────────────────────────────────────────────────────────────────────────' >&2
+  for index in "${!disks[@]}"; do
+    disk=${disks[$index]}
+    size=$(lsblk -dno SIZE "$disk" | awk '{$1=$1; print}')
+    model=$(lsblk -dno MODEL "$disk" | awk '{$1=$1; print}')
+    transport=$(lsblk -dno TRAN "$disk" | awk '{$1=$1; print}')
+    serial=$(lsblk -dno SERIAL "$disk" | awk '{$1=$1; print}')
+    printf '  [%-2d] %-16s %-10s %-24s %-8s %s\n' \
+      "$((index + 1))" "$disk" "${size:--}" "${model:--}" "${transport:--}" "${serial:--}" >&2
+  done
+  printf '\n' >&2
+
   while true; do
-    read -r -p "输入目标磁盘完整路径（例如 /dev/nvme0n1）：" selection
-    for line in "${disks[@]}"; do
-      if [[ $selection == "$line" ]]; then
-        printf '%s' "$selection"
-        return 0
-      fi
-    done
-    warn "请输入上方列表中的完整磁盘路径。"
+    read -r -p "请选择目标磁盘编号 [1-${#disks[@]}]：" selection
+    if [[ $selection =~ ^[0-9]+$ ]] \
+      && (( selection >= 1 && selection <= ${#disks[@]} )); then
+      printf '%s\n' "${disks[$((selection - 1))]}"
+      return 0
+    fi
+    warn "无效选择，请输入 1 到 ${#disks[@]} 之间的编号。" >&2
   done
 }
 
