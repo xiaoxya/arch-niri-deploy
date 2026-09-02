@@ -35,9 +35,16 @@ sudo ./install-base.sh
 - 普通用户名；
 - 时区（默认 `Asia/Shanghai`）；
 - TTY 键盘布局；
-- Reflector 镜像国家/地区；
 - 用户密码；
 - 从自动扫描结果中按编号选择整块目标磁盘。
+
+安装器固定使用中科大 USTC Arch Linux 镜像：
+
+```text
+Server = https://mirrors.ustc.edu.cn/archlinux/$repo/os/$arch
+```
+
+该地址会同时写入安装介质当前环境和新系统；`reflector.timer` 会被屏蔽，防止它自动覆盖固定镜像。原镜像列表仅首次保存为 `/etc/pacman.d/mirrorlist.pre-ustc`。
 
 ## 3. 磁盘布局
 
@@ -64,7 +71,7 @@ Btrfs 子卷：
 
 ## 4. 基础系统内容
 
-第一阶段只安装：Linux 内核、对应 CPU 微码、Btrfs、systemd-boot、NetworkManager、OpenSSH、sudo、reflector、Snapper 和基础维护工具。它不会安装显示服务、声卡服务或桌面环境。
+第一阶段只安装：Linux 内核、对应 CPU 微码、Btrfs、systemd-boot、NetworkManager、OpenSSH、sudo、reflector、Snapper 和基础维护工具。Reflector 仅作为手动维护工具保留，其定时服务不会启用。基础阶段不会安装显示服务、声卡服务或桌面环境。
 
 安装结束后：
 
@@ -119,6 +126,7 @@ cd /opt/arch-niri-deploy
 ## 7. 重复运行
 
 - `install-niri.sh` 与 `install-apps.sh` 使用 `pacman --needed`，可以安全重跑。
+- 三个安装器都会重新写入固定的 USTC 镜像配置，避免被旧镜像列表影响。
 - 第一次部署桌面时，已有配置会保存为 `.bak.日期-时间`。
 - 后续重跑只更新本项目管理的文件，不反复制造整目录备份。
 - `install-base.sh` 不是升级脚本，每次运行都会重新分区，绝不能对在用磁盘执行。

@@ -64,6 +64,8 @@ main() {
   verify_btrfs_layout /
 
   create_snapshot "Before Niri desktop installation"
+  info "确保使用中科大 USTC Arch Linux 镜像……"
+  configure_ustc_mirror
   info "更新系统……"
   sudo pacman -Syu --noconfirm
   info "识别并安装显卡驱动……"

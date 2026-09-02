@@ -4,10 +4,30 @@ set -Eeuo pipefail
 # 这些数组由入口脚本读取，单独检查库文件时 ShellCheck 无法看到调用方。
 # shellcheck disable=SC2034
 readonly -a BASE_PACKAGES=(
-  base linux linux-firmware btrfs-progs sudo networkmanager openssh
+  base linux linux-firmware mkinitcpio iptables-nft btrfs-progs sudo networkmanager openssh
   reflector snapper pacman-contrib git curl wget vim nano man-db man-pages
   bash-completion less which usbutils pciutils efibootmgr dosfstools
 )
+
+# pacman 会在读取 mirrorlist 时展开 $repo 与 $arch，此处必须保留字面量。
+# shellcheck disable=SC2016
+readonly USTC_ARCH_MIRROR='https://mirrors.ustc.edu.cn/archlinux/$repo/os/$arch'
+
+configure_ustc_mirror() {
+  local root=${1:-}
+  local mirrorlist="${root%/}/etc/pacman.d/mirrorlist"
+  local -a privilege=()
+  (( EUID == 0 )) || privilege=(sudo)
+
+  "${privilege[@]}" install -d "$(dirname -- "$mirrorlist")"
+  if [[ -f $mirrorlist && ! -e ${mirrorlist}.pre-ustc ]]; then
+    "${privilege[@]}" cp -a "$mirrorlist" "${mirrorlist}.pre-ustc"
+  fi
+  {
+    printf '# Managed by arch-niri-deploy; reflector.timer is intentionally disabled.\n'
+    printf 'Server = %s\n' "$USTC_ARCH_MIRROR"
+  } | "${privilege[@]}" tee "$mirrorlist" >/dev/null
+}
 
 # shellcheck disable=SC2034
 readonly -a NIRI_PACKAGES=(

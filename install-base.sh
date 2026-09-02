@@ -23,7 +23,6 @@ cleanup() {
 trap cleanup EXIT
 
 prompt_install_settings() {
-  local mirror_pattern='^[[:alpha:] ,_-]+$'
   HOSTNAME_VALUE=$(prompt_default "主机名" "arch-niri")
   is_valid_hostname "$HOSTNAME_VALUE" || die "主机名格式无效。"
 
@@ -35,9 +34,6 @@ prompt_install_settings() {
 
   KEYMAP_VALUE=$(prompt_default "TTY 键盘布局" "us")
   localectl list-keymaps | grep -Fxq "$KEYMAP_VALUE" || die "键盘布局不存在：${KEYMAP_VALUE}"
-
-  MIRROR_COUNTRIES=$(prompt_default "优选镜像国家/地区（逗号分隔）" "China,Singapore,Japan")
-  [[ $MIRROR_COUNTRIES =~ $mirror_pattern ]] || die "镜像国家/地区格式无效。"
 
   while true; do
     read -r -s -p "设置 ${USERNAME_VALUE} 的密码：" USER_PASSWORD
@@ -98,7 +94,8 @@ configure_installed_system() {
   } > /mnt/boot/loader/entries/arch-fallback.conf
 
   arch-chroot /mnt mkinitcpio -P
-  arch-chroot /mnt systemctl enable NetworkManager sshd reflector.timer fstrim.timer
+  arch-chroot /mnt systemctl enable NetworkManager sshd fstrim.timer
+  arch-chroot /mnt systemctl mask reflector.timer
 
   info "部署项目副本并启用 Snapper……"
   rm -rf /mnt/opt/arch-niri-deploy
@@ -145,15 +142,15 @@ main() {
   mount_subvolumes "$root_partition" "$esp_partition"
   MOUNTED=1
 
-  info "刷新密钥与镜像列表……"
-  pacman -Sy --needed --noconfirm archlinux-keyring reflector
-  reflector --country "$MIRROR_COUNTRIES" --protocol https --latest 20 --sort rate --save /etc/pacman.d/mirrorlist || \
-    warn "Reflector 未能优化镜像，将沿用 ISO 当前镜像列表。"
+  info "固定使用中科大 USTC Arch Linux 镜像并刷新数据库……"
+  configure_ustc_mirror
+  pacman -Syy --needed --noconfirm archlinux-keyring
 
   local -a bootstrap_packages=("${BASE_PACKAGES[@]}")
   [[ -n $microcode_package ]] && bootstrap_packages+=("$microcode_package")
   info "安装基础软件包（不包含桌面）……"
   pacstrap -K /mnt "${bootstrap_packages[@]}"
+  configure_ustc_mirror /mnt
   genfstab -U /mnt > /mnt/etc/fstab
   configure_installed_system "$disk" "$root_partition" "$microcode_package" "$microcode_image"
 

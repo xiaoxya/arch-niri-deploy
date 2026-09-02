@@ -73,6 +73,8 @@ main() {
   ((${#selections[@]} > 0)) || { info "未选择任何软件。"; return 0; }
 
   create_snapshot "Before optional applications"
+  info "确保使用中科大 USTC Arch Linux 镜像……"
+  configure_ustc_mirror
   contains_selection 1 "${selections[@]}" && pacman_install firefox
   contains_selection 2 "${selections[@]}" && pacman_install mpv
   contains_selection 3 "${selections[@]}" && aur_install localsend
