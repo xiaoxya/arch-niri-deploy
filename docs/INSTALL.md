@@ -116,6 +116,8 @@ cd /opt/arch-niri-deploy
 6. 校验 Niri KDL；
 7. 创建安装后快照。
 
+显卡厂商通过 PCI ID 判断（AMD `1002`、Intel `8086`、NVIDIA `10de`），不会依赖设备描述中的模糊文本。当前 Arch 已把 Mesa 的 VA-API 后端合并到 `mesa`，AMD 分支不再请求已经移除的 `mesa-vdpau` 等旧拆分包。
+
 对于 NVIDIA Turing/RTX 20 系列及更新显卡，脚本使用 Arch 官方 `nvidia-open`。由于 NVIDIA 590+ 已停止支持 Pascal/Maxwell 及更旧架构，检测到此类显卡时脚本会避免自动装入不兼容内核模块，并要求人工安装 legacy AUR 驱动。
 
 完成后重启：

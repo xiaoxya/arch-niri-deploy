@@ -33,6 +33,14 @@ Server = https://mirrors.ustc.edu.cn/archlinux/$repo/os/$arch
 
 ## Niri 或 greetd 失败
 
+如果显卡驱动阶段出现：
+
+```text
+error: target not found: mesa-vdpau
+```
+
+说明正在使用旧版 `lib/gpu.sh`。旧规则中的 `ATI` 会误匹配 `VGA compatible controller`，从而把 Intel 显卡错误识别为 AMD。更新项目后直接重新运行 `./install-niri.sh` 即可；此故障发生在桌面软件安装前，不需要回滚基础系统。
+
 切换到 TTY 登录：
 
 ```bash

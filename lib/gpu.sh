@@ -5,6 +5,11 @@ GPU_SUMMARY=''
 GPU_NEEDS_LEGACY_NVIDIA=0
 declare -ag GPU_PACKAGES=()
 
+gpu_has_vendor() {
+  local gpu_lines=$1 vendor_id=$2
+  grep -Eqi "\\[${vendor_id}:[[:xdigit:]]{4}\\]" <<<"$gpu_lines"
+}
+
 detect_gpu() {
   local gpu_lines
   gpu_lines=$(lspci -nn | grep -Ei 'VGA compatible controller|3D controller|Display controller' || true)
@@ -13,13 +18,15 @@ detect_gpu() {
   GPU_PACKAGES=(mesa vulkan-icd-loader)
   GPU_NEEDS_LEGACY_NVIDIA=0
 
-  if grep -Eqi 'AMD|ATI' <<<"$gpu_lines"; then
-    GPU_PACKAGES+=(vulkan-radeon libva-mesa-driver mesa-vdpau)
+  # 使用 PCI 厂商 ID，避免 ATI 误匹配 "VGA compatible controller"。
+  if gpu_has_vendor "$gpu_lines" '1002'; then
+    # 当前 Arch 的 VA-API Mesa 后端已由 mesa 包提供，不再安装旧拆分包。
+    GPU_PACKAGES+=(vulkan-radeon)
   fi
-  if grep -Eqi 'Intel' <<<"$gpu_lines"; then
+  if gpu_has_vendor "$gpu_lines" '8086'; then
     GPU_PACKAGES+=(vulkan-intel intel-media-driver)
   fi
-  if grep -Eqi 'NVIDIA' <<<"$gpu_lines"; then
+  if gpu_has_vendor "$gpu_lines" '10de'; then
     if grep -Eqi 'GTX (10[0-9]{2}|9[0-9]{2}|8[0-9]{2}|7[0-9]{2}|6[0-9]{2})|Quadro (M|K)|GeForce [4-9][0-9]{2}' <<<"$gpu_lines"; then
       GPU_NEEDS_LEGACY_NVIDIA=1
     else
@@ -43,9 +50,9 @@ install_gpu_drivers() {
 
 install_32bit_gpu_drivers() {
   local -a packages=(lib32-mesa lib32-vulkan-icd-loader)
-  grep -Eqi 'AMD|ATI' <<<"$GPU_SUMMARY" && packages+=(lib32-vulkan-radeon)
-  grep -Eqi 'Intel' <<<"$GPU_SUMMARY" && packages+=(lib32-vulkan-intel)
-  if grep -Eqi 'NVIDIA' <<<"$GPU_SUMMARY" && (( ! GPU_NEEDS_LEGACY_NVIDIA )); then
+  gpu_has_vendor "$GPU_SUMMARY" '1002' && packages+=(lib32-vulkan-radeon)
+  gpu_has_vendor "$GPU_SUMMARY" '8086' && packages+=(lib32-vulkan-intel)
+  if gpu_has_vendor "$GPU_SUMMARY" '10de' && (( ! GPU_NEEDS_LEGACY_NVIDIA )); then
     packages+=(lib32-nvidia-utils)
   fi
   pacman_install "${packages[@]}"
