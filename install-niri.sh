@@ -63,15 +63,21 @@ main() {
   sudo -v
   verify_btrfs_layout /
 
+  progress_init 8
+  progress_step "创建 Niri 安装前快照"
   create_snapshot "Before Niri desktop installation"
-  info "更新系统……"
+  progress_step "配置中科大 USTC 软件镜像"
+  configure_ustc_mirror
+  progress_step "更新 Arch Linux 系统"
   sudo pacman -Syu --noconfirm
-  info "识别并安装显卡驱动……"
+  progress_step "识别并安装显卡驱动"
   install_gpu_drivers
-  info "安装 Niri 与通用 Wayland 桌面组件……"
+  progress_step "安装 Niri 与 Wayland 桌面组件"
   pacman_install "${NIRI_PACKAGES[@]}"
 
+  progress_step "部署 Niri 和桌面组件配置"
   deploy_user_configs
+  progress_step "配置 greetd、网络、蓝牙与音频服务"
   configure_greetd
   configure_services
 
@@ -82,7 +88,9 @@ main() {
   if command -v niri >/dev/null 2>&1; then
     niri validate
   fi
+  progress_step "校验 Niri 并创建安装后快照"
   create_snapshot "After Niri desktop installation"
+  progress_done "Niri 桌面环境安装完成"
 
   banner "Niri 安装完成"
   ok "配置已部署到 $HOME/.config，脚本已部署到 $HOME/.local/bin。"
