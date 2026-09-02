@@ -95,7 +95,9 @@ main() {
   banner "Niri 安装完成"
   ok "配置已部署到 $HOME/.config，脚本已部署到 $HOME/.local/bin。"
   info "重启后 greetd 会显示 Niri 会话。快捷键：Super+T 终端，Super+D 启动器。"
-  (( GPU_NEEDS_LEGACY_NVIDIA )) && warn "在安装兼容的 NVIDIA legacy 驱动前，请勿进入 Niri。"
+  if (( GPU_NEEDS_LEGACY_NVIDIA )); then
+    warn "在安装兼容的 NVIDIA legacy 驱动前，请勿进入 Niri。"
+  fi
 }
 
 main "$@"
