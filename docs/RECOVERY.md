@@ -9,6 +9,28 @@
 
 如果仅桌面失败，通常不需要回滚整个系统。
 
+## 基础安装在 pacstrap 阶段失败
+
+如果日志以 `Failed to install packages to new root`、下载超时或 `Truncated tar archive` 结束，说明新系统尚未安装完整，不能从目标磁盘启动。保持在 Arch ISO 中，确认网络恢复后，从保存项目的目录重新运行：
+
+```bash
+sudo ./install-base.sh
+```
+
+基础安装器会重新创建所选磁盘的分区和文件系统，因此仍会要求两次磁盘清空确认。新版脚本会固定使用 USTC 镜像，并重新下载软件包；不要尝试在不完整的 `/mnt` 中继续执行后续 Niri 安装。
+
+可先核对当前安装环境使用的源：
+
+```bash
+cat /etc/pacman.d/mirrorlist
+```
+
+应当包含：
+
+```text
+Server = https://mirrors.ustc.edu.cn/archlinux/$repo/os/$arch
+```
+
 ## Niri 或 greetd 失败
 
 切换到 TTY 登录：
