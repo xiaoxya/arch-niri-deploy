@@ -111,10 +111,13 @@ cd /opt/arch-niri-deploy
 1. 创建安装前快照；
 2. 完整更新 Arch；
 3. 识别 Intel、AMD、NVIDIA 或混合显卡并安装驱动；
-4. 安装 Niri、PipeWire、Portal、输入法、桌面组件与 greetd；
-5. 备份已有用户配置并部署默认配置；
-6. 校验 Niri KDL；
-7. 创建安装后快照。
+4. 安装 Niri、PipeWire、Portal、桌面组件与 greetd；
+5. 安装 Noto/JetBrains 字体、Fcitx5、Fish、Foot 与终端工具；
+6. 备份已有用户配置，部署雾凇拼音与模块化配置；
+7. 将 Fish 设置为当前用户的默认 Shell；
+8. 校验 Niri KDL 并创建安装后快照。
+
+雾凇拼音从其上游 GitHub 仓库下载，不启用 ArchLinuxCN 或 SHORiN 的个人软件仓库。若所在网络无法访问 GitHub，安装器会保留安装前快照、明确停止在“部署雾凇拼音词库”阶段，可恢复网络后直接重跑。
 
 显卡厂商通过 PCI ID 判断（AMD `1002`、Intel `8086`、NVIDIA `10de`），不会依赖设备描述中的模糊文本。当前 Arch 已把 Mesa 的 VA-API 后端合并到 `mesa`，AMD 分支不再请求已经移除的 `mesa-vdpau` 等旧拆分包。
 
@@ -141,4 +144,5 @@ cd /opt/arch-niri-deploy
 - 三个安装器都会重新写入固定的 USTC 镜像配置，避免被旧镜像列表影响。
 - 第一次部署桌面时，已有配置会保存为 `.bak.日期-时间`。
 - 后续重跑只更新本项目管理的文件，不反复制造整目录备份。
+- 后续重跑会拉取最新雾凇拼音文件；首次接管已有 Rime 配置时会先备份。
 - `install-base.sh` 不是升级脚本，每次运行都会重新分区，绝不能对在用磁盘执行。

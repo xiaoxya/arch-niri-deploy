@@ -6,7 +6,7 @@
 
 | 快捷键 | 操作 |
 |---|---|
-| `Mod+T` | Kitty 终端 |
+| `Mod+T` | Foot 终端 |
 | `Mod+D` | Fuzzel 应用启动器 |
 | `Mod+E` | Thunar 文件管理器 |
 | `Mod+N` | 通知中心 |

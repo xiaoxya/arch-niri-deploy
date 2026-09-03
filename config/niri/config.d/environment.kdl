@@ -2,8 +2,9 @@ environment {
     XDG_CURRENT_DESKTOP "niri"
     XDG_SESSION_DESKTOP "niri"
     XMODIFIERS "@im=fcitx"
-    GTK_IM_MODULE "fcitx"
     QT_IM_MODULE "fcitx"
+    QT_IM_MODULES "wayland;fcitx;ibus"
     SDL_IM_MODULE "fcitx"
+    TERMINAL "foot"
     ELECTRON_OZONE_PLATFORM_HINT "auto"
 }

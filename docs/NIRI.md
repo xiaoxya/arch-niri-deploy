@@ -13,10 +13,11 @@ Niri 是可滚动平铺的 Wayland 合成器；本项目围绕它组合了一套
 | PipeWire + WirePlumber | 音频、视频流和屏幕共享 |
 | Waybar | 顶栏、工作区和状态信息 |
 | Fuzzel | 应用启动器与菜单 |
-| Kitty | 默认终端 |
+| Foot | Wayland 原生默认终端，使用 JetBrains Mono Nerd Font |
 | SwayNC | 通知守护进程与通知中心 |
 | swaylock + swayidle | 锁屏、空闲熄屏、睡眠前锁屏 |
-| Fcitx5 + Rime | 中文输入框架 |
+| Fcitx5 + 雾凇拼音 | 中文输入框架与简体中文词库 |
+| Fish + Starship | 默认交互 Shell 与命令提示符 |
 | wl-clipboard + cliphist | Wayland 剪贴板和历史 |
 | grim + slurp + Satty | 截图、区域选择和标注 |
 | Thunar + GVfs | 文件管理、SMB/MTP/GPhoto 访问 |
@@ -64,13 +65,28 @@ output "eDP-1" {
 
 ## 输入法
 
-Fcitx5 会随会话启动。首次进入后运行：
+Fcitx5 会随会话启动，安装器会预先启用 Rime 并部署雾凇拼音，因此首次登录即可使用。默认按 `Ctrl+Space` 在英文键盘和 Rime 间切换。如需调整候选框、快捷键或输入方案，运行：
 
 ```bash
 fcitx5-configtool
 ```
 
-在输入法列表中添加 Rime。默认可使用 `Ctrl+Space` 切换；具体行为由 Fcitx5 配置决定。
+词库位于 `~/.local/share/fcitx5/rime`。重新运行安装器会更新雾凇拼音的上游文件，并保留额外创建的个人文件；首次部署前会备份已有目录。
+
+环境配置保留 XWayland 所需的 `XMODIFIERS`，并为非 KWin 环境设置 Qt/SDL 输入模块；不全局强制 `GTK_IM_MODULE`，让原生 Wayland GTK 3/4 应用使用 `text-input-v3`，避免候选框闪烁。
+
+## 字体、Shell 与终端
+
+本项目采用 SHORiN Minimal Niri 的稳健子集：Noto CJK/Emoji、Liberation、JetBrains Mono Nerd Font、Font Awesome、Fish、Starship、Zoxide、Eza、Bat 与 Foot。没有引入其个人 AI、游戏、壁纸或自建工具。
+
+Foot 默认使用 Fish，`Mod+T` 打开终端。Fish 提供 Starship 提示符、Zoxide 智能目录跳转，以及 Eza/Bat 的兼容别名。配置路径为：
+
+```text
+~/.config/foot/foot.ini
+~/.config/fish/config.fish
+~/.config/starship.toml
+~/.config/fontconfig/fonts.conf
+```
 
 ## 屏幕共享
 

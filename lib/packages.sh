@@ -33,14 +33,33 @@ configure_ustc_mirror() {
 readonly -a NIRI_PACKAGES=(
   niri xwayland-satellite xdg-desktop-portal xdg-desktop-portal-gnome
   xdg-desktop-portal-gtk pipewire pipewire-alsa pipewire-pulse pipewire-jack
-  wireplumber fcitx5 fcitx5-configtool fcitx5-gtk fcitx5-qt fcitx5-rime
-  waybar fuzzel kitty swaync swaylock swayidle swaybg wl-clipboard cliphist
+  wireplumber sof-firmware alsa-ucm-conf
+  waybar fuzzel swaync swaylock swayidle swaybg wl-clipboard cliphist
   grim slurp satty thunar tumbler ffmpegthumbnailer poppler-glib gvfs
   gvfs-smb gvfs-mtp gvfs-gphoto2 file-roller thunar-archive-plugin
   greetd greetd-tuigreet polkit-gnome gnome-keyring network-manager-applet
   pavucontrol brightnessctl playerctl bluez bluez-utils blueman
-  noto-fonts noto-fonts-cjk noto-fonts-emoji ttf-dejavu ttf-nerd-fonts-symbols-mono
-  fish starship jq libnotify
+  jq libnotify
+)
+
+# SHORiN Minimal Niri 中字体、输入法、Shell 与终端的稳定子集。
+# 仅使用 Arch 官方仓库组件；雾凇拼音词库由 install-niri.sh 从上游部署。
+# shellcheck disable=SC2034
+readonly -a SHORIN_FONT_PACKAGES=(
+  noto-fonts noto-fonts-cjk noto-fonts-emoji ttf-liberation
+  ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols-mono otf-font-awesome
+  terminus-font
+)
+
+# shellcheck disable=SC2034
+readonly -a SHORIN_INPUT_PACKAGES=(
+  fcitx5 fcitx5-configtool fcitx5-gtk fcitx5-qt fcitx5-rime
+  qt5-wayland qt6-wayland
+)
+
+# shellcheck disable=SC2034
+readonly -a SHORIN_TERMINAL_PACKAGES=(
+  foot fish starship eza zoxide bat
 )
 
 pacman_install() {

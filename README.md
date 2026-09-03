@@ -6,7 +6,7 @@
 2. `install-niri.sh`：重启进入基础系统后安装 Niri 桌面。
 3. `install-apps.sh`：按需安装日常、游戏、开发、虚拟化和创作软件。
 
-设计借鉴了 SHORiN-KiWATA 的 Wayland/Niri 组件组合与配置拆分思路，但不包含个人主题、壁纸、专属仓库、AI 输入法或其他作者个人化软件。
+设计借鉴了 SHORiN-KiWATA 的 Wayland/Niri 组件组合与配置拆分思路，并采用其字体、Fcitx5 + 雾凇拼音、Fish + Starship/Zoxide 和 Foot 终端思路；不包含个人主题、壁纸、专属仓库、AI 输入法或其他作者个人化软件。
 
 ## 快速开始
 
