@@ -78,8 +78,8 @@ main() {
   progress_init "$((selected_count + 3))"
   progress_step "创建可选应用安装前快照"
   create_snapshot "Before optional applications"
-  progress_step "配置中科大 USTC 软件镜像"
-  configure_ustc_mirror
+  progress_step "沿用基础系统的软件镜像"
+  configure_mirror_profile
   if contains_selection 1 "${selections[@]}"; then
     progress_step "安装 Firefox"
     pacman_install firefox

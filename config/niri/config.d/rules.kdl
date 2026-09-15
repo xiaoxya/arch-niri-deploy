@@ -20,3 +20,15 @@ window-rule {
     match app-id=r#"^(org\.keepassxc\.KeePassXC|org\.gnome\.World\.Secrets)$"#
     block-out-from "screen-capture"
 }
+
+// DMS/Quickshell 图层需要参与 Niri 的 backdrop 合成，否则模糊壁纸和面板
+// 可能出现黑底、层级错误或无法正确取样背景。
+layer-rule {
+    match namespace=r#"^quickshell$"#
+    place-within-backdrop true
+}
+
+layer-rule {
+    match namespace="dms:blurwallpaper"
+    place-within-backdrop true
+}

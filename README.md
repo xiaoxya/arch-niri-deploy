@@ -2,11 +2,13 @@
 
 一套分层、可审计的 Arch Linux + Niri 部署项目。基础系统、桌面环境和可选应用彼此独立：
 
-1. `install-base.sh`：仅从 Arch ISO 安装 UEFI/GPT + Btrfs 基础系统。
+1. `install-base.sh`：从 Arch ISO 安装 UEFI/GPT + Btrfs 基础系统，支持 DHCP/有线固定 IPv4，可选安装 `snapper-rollback`。
 2. `install-niri.sh`：重启进入基础系统后安装 Niri 桌面。
 3. `install-apps.sh`：按需安装日常、游戏、开发、虚拟化和创作软件。
 
-设计借鉴了 SHORiN-KiWATA 的 Wayland/Niri 组件组合与配置拆分思路，并采用其字体、Fcitx5 + 雾凇拼音、Fish + Starship/Zoxide 和 Foot 终端思路；不包含个人主题、壁纸、专属仓库、AI 输入法或其他作者个人化软件。
+设计借鉴了 SHORiN-KiWATA 的 DMS/Niri 组件组合与配置拆分思路，使用 Arch 官方 `dms-shell-niri` 与 DMS Greeter（AUR 二进制包）、完整中英文字体、Fcitx5 + 雾凇拼音、Fish + Starship/Zoxide 和 Kitty。命令提示符采用 SHORiN 风格的粉色 Powerline 分段；不包含个人壁纸、专属仓库、AI 输入法或其他作者个人化软件。
+
+已安装桌面但终端美化不完整时，在新版项目目录以普通用户运行 `bash scripts/update-terminal.sh`，可单独备份和更新 Fish/Starship/Kitty 配置。详见 [终端美化与更新](docs/NIRI.md#命令行美化与已安装系统更新)。
 
 ## 快速开始
 
@@ -36,6 +38,8 @@ sudo ./install-base.sh
 ├── lib/                      # UI、磁盘、Btrfs、GPU、包管理、快照库
 ├── config/                   # Niri 及桌面组件的默认配置
 ├── scripts/                  # 用户侧日常工具
+├── packaging/                # 固定版本第三方软件的本地构建配方
+├── tests/                    # 网络参数与配置生成检查
 └── docs/                     # 安装、Niri、快捷键、恢复文档
 ```
 
@@ -49,8 +53,14 @@ sudo ./install-base.sh
 
 ## 安全
 
-基础安装器在分区前要求两次确认：先输入完整磁盘路径，再输入随机显示的确认码。日志默认保存到 `/tmp/arch-niri-deploy-*.log`，密码不会写入日志。
+基础安装器会排除当前 Arch 安装介质，并拒绝只读、容量不足、仍在挂载或含活动交换分区的目标盘。分区前先显示完整配置摘要，再要求两次确认：输入完整磁盘路径和随机确认码。日志默认保存到 `/tmp/arch-niri-deploy-*.log`，安装完成后复制到新系统的 `/var/log/arch-niri-deploy/base-install.log`；密码不会写入日志。
 
 ## 许可
 
-MIT，见 [`LICENSE`](LICENSE)。
+本项目代码使用 MIT，见 [`LICENSE`](LICENSE)。安装器下载的第三方软件保留其各自许可；`snapper-rollback` 包保留上游 GPLv3 源码许可和项目安全封装的 MIT 许可。
+
+## 回滚安全范围
+
+项目回滚脚本及 `snapper-rollback 1.0-3` 安全入口统一使用 Snapper classic。提供 `--check`，检查默认根、fstab、实际启动项、内核及模块；失败时尝试恢复原默认根。ESP 不在根快照内，因此会拒绝在线跨内核回滚。初始快照或配额初始化失败会中止基础安装。
+
+详见 [恢复指南](docs/RECOVERY.md) 与 [测试和虚拟机验收](docs/TESTING.md)。本地模拟检查不代表已经完成真实机器重启验收，不承诺任意快照都能无条件恢复。

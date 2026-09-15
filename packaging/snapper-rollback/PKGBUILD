@@ -1,0 +1,34 @@
+# Local reproducible package of jrabinow/snapper-rollback (GPL-3.0).
+# AUR's 1.0 recipe follows an unpinned Git branch; this recipe pins the source.
+pkgname=snapper-rollback
+pkgver=1.0
+pkgrel=3
+pkgdesc='Project safety wrapper for Snapper classic rollback (upstream source archived)'
+arch=('any')
+url='https://github.com/jrabinow/snapper-rollback'
+license=('GPL-3.0-only' 'MIT')
+depends=('bash' 'coreutils' 'btrfs-progs' 'snapper' 'util-linux' 'mkinitcpio' 'diffutils' 'gawk' 'grep' 'jq' 'systemd')
+conflicts=('rollback-git')
+backup=('etc/snapper-rollback.conf')
+options=('!debug')
+_commit=04488f2350e8ec214277fe7de608492a9ee665a7
+source=("snapper-rollback-${_commit}.tar.gz::https://codeload.github.com/jrabinow/snapper-rollback/tar.gz/${_commit}"
+        'launcher.sh' 'rollback-snapshot.sh' 'rollback.sh' 'PROJECT-LICENSE')
+sha256sums=('a7bc632d724f26fd0a187b1c55441f6b47856f2945dde74ec7e510e56f290679'
+            '430272841c466e0719b667c49a41f8cd5b9b3c5d154c0499b0e324786f32c3e5'
+            'b3a66798389c0f2c3c63c5ff6840610d7ca824124d72cd4464856ee8306ec0d3'
+            '8e889f517bafc0b1f47f6fa71f675438dcdd95c19df16654566d181b39e7f0b2'
+            'ea7f14ac7e4336abc84ba720a31ec7cc9048dc59dec02bff9fd15dd91f9c6837')
+
+package() {
+  cd "$srcdir/snapper-rollback-${_commit}"
+  # The unmodified upstream code is reference-only: its swallowed exceptions
+  # and rename-@ backend are not exposed as an executable command.
+  install -Dm644 snapper-rollback.py "$pkgdir/usr/share/snapper-rollback/upstream/snapper-rollback.py"
+  install -Dm755 "$srcdir/launcher.sh" "$pkgdir/usr/bin/snapper-rollback"
+  install -Dm755 "$srcdir/rollback-snapshot.sh" "$pkgdir/usr/lib/snapper-rollback/scripts/rollback-snapshot.sh"
+  install -Dm644 "$srcdir/rollback.sh" "$pkgdir/usr/lib/snapper-rollback/lib/rollback.sh"
+  install -Dm644 "$srcdir/PROJECT-LICENSE" "$pkgdir/usr/share/licenses/$pkgname/PROJECT-LICENSE"
+  install -Dm644 snapper-rollback.conf "$pkgdir/etc/snapper-rollback.conf"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

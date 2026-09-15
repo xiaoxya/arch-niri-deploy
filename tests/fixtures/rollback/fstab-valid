@@ -1,0 +1,2 @@
+UUID=abcd-1234 / btrfs rw,compress=zstd:1 0 0
+UUID=abcd-1234 /home btrfs rw,subvol=/@home 0 0

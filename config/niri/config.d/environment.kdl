@@ -5,6 +5,11 @@ environment {
     QT_IM_MODULE "fcitx"
     QT_IM_MODULES "wayland;fcitx;ibus"
     SDL_IM_MODULE "fcitx"
-    TERMINAL "foot"
+    TERMINAL "kitty"
+    QT_QPA_PLATFORM "wayland"
+    QT_QPA_PLATFORMTHEME "gtk3"
+    QT_QPA_PLATFORMTHEME_QT6 "gtk3"
+    QS_ICON_THEME "Papirus-Dark"
+    DMS_SCREENSHOT_EDITOR "satty"
     ELECTRON_OZONE_PLATFORM_HINT "auto"
 }

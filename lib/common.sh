@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
+shopt -s inherit_errexit 2>/dev/null || true
 
 readonly PROJECT_NAME="arch-niri-deploy"
 LOG_FILE="${LOG_FILE:-/tmp/${PROJECT_NAME}-$(date +%Y%m%d-%H%M%S).log}"
@@ -17,13 +18,16 @@ die() {
 }
 
 on_error() {
-  local exit_code=$?
-  local line=${BASH_LINENO[0]:-unknown}
-  printf '\n命令在第 %s 行失败（退出码 %s）。日志：%s\n' "$line" "$exit_code" "$LOG_FILE" >&2
+  local exit_code=${1:-1}
+  local line=${2:-unknown}
+  local failed_command=${3:-unknown}
+  trap - ERR
+  printf '\n命令在第 %s 行失败（退出码 %s）：%s\n日志：%s\n' \
+    "$line" "$exit_code" "$failed_command" "$LOG_FILE" >&2
   exit "$exit_code"
 }
 
-trap on_error ERR
+trap 'on_error "$?" "$LINENO" "$BASH_COMMAND"' ERR
 
 require_command() {
   local command_name
@@ -49,7 +53,8 @@ require_uefi() {
 }
 
 check_network() {
-  getent ahosts archlinux.org >/dev/null 2>&1 || die "无法解析 archlinux.org，请先连接网络。"
+  local host=${1:-archlinux.org}
+  getent ahosts "$host" >/dev/null 2>&1 || die "无法解析 ${host}，请先连接网络。"
 }
 
 is_valid_hostname() {
@@ -57,7 +62,7 @@ is_valid_hostname() {
 }
 
 is_valid_username() {
-  [[ $1 =~ ^[a-z_][a-z0-9_-]{0,30}$ ]]
+  [[ $1 != root && $1 =~ ^[a-z_][a-z0-9_-]{0,30}$ ]]
 }
 
 backup_path() {
@@ -79,6 +84,7 @@ copy_tree() {
 confirm() {
   local prompt=${1:-"继续？"}
   local answer
-  read -r -p "${prompt} [y/N] " answer
+  printf '%s [y/N] ' "$prompt" >/dev/tty
+  IFS= read -r answer </dev/tty
   [[ $answer =~ ^[Yy]$ ]]
 }

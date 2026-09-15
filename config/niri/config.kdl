@@ -3,11 +3,20 @@
 
 include "config.d/environment.kdl"
 include "config.d/input.kdl"
-include "config.d/layout.kdl"
 include "config.d/startup.kdl"
 include "config.d/rules.kdl"
-include "config.d/binds.kdl"
-include "config.d/outputs.kdl"
+
+// DMS 通过这些文件管理颜色、布局、快捷键、输出与光标。
+// optional=true 可确保首次生成或升级期间缺少单个模块时 Niri 仍能启动。
+include optional=true "dms/colors.kdl"
+include optional=true "dms/layout.kdl"
+include optional=true "dms/alttab.kdl"
+include optional=true "dms/binds.kdl"
+include optional=true "dms/outputs.kdl"
+include optional=true "dms/cursor.kdl"
+include optional=true "dms/input.kdl"
+include optional=true "dms/windowrules.kdl"
+include optional=true "dms/wpblur.kdl"
 
 prefer-no-csd
 screenshot-path "~/Pictures/Screenshots/Screenshot %Y-%m-%d %H-%M-%S.png"

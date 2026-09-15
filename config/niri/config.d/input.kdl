@@ -18,8 +18,3 @@ input {
 
     focus-follows-mouse max-scroll-amount="0%"
 }
-
-cursor {
-    xcursor-theme "Adwaita"
-    xcursor-size 24
-}
