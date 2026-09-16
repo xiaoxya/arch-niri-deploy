@@ -23,7 +23,7 @@ deploy_user_configs() {
   local dms_marker="$HOME/.config/.arch-niri-deploy-dms-v1"
   local item
   if [[ ! -e $marker ]]; then
-    for item in waybar fuzzel swaync swaylock swayidle xdg-desktop-portal satty; do
+    for item in xdg-desktop-portal satty; do
       backup_path "$HOME/.config/$item"
     done
   fi
@@ -60,7 +60,11 @@ deploy_user_configs() {
       > "$HOME/.config/kitty/dank-tabs.conf"
   fi
   deploy_terminal_configs "$SCRIPT_DIR"
-  install -m 0755 "$SCRIPT_DIR/scripts/"*.sh "$HOME/.local/bin/"
+  # Only self-contained daily tools belong in ~/.local/bin. Maintenance
+  # scripts need ../lib and must be run from the complete project directory.
+  for item in screenshot.sh update-system.sh; do
+    install -m 0755 "$SCRIPT_DIR/scripts/$item" "$HOME/.local/bin/$item"
+  done
   if ! grep -Fxq 'kitty.desktop' "$HOME/.config/xdg-terminals.list" 2>/dev/null; then
     printf 'kitty.desktop\n' >> "$HOME/.config/xdg-terminals.list"
   fi

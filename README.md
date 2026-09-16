@@ -37,13 +37,17 @@ sudo ./install-base.sh
 ├── install-apps.sh           # 可选应用安装器
 ├── lib/                      # UI、磁盘、Btrfs、GPU、包管理、快照库
 ├── config/                   # Niri 及桌面组件的默认配置
-├── scripts/                  # 用户侧日常工具
+├── scripts/                  # 日常工具及依赖项目目录的维护/恢复工具
 ├── packaging/                # 固定版本第三方软件的本地构建配方
-├── tests/                    # 网络参数与配置生成检查
+├── tests/                    # 网络、回滚安全及包校验测试（含模拟数据）
 └── docs/                     # 安装、Niri、快捷键、恢复文档
 ```
 
 ## 约束与兼容性
+
+项目只保留当前 Niri + DMS 使用的配置。旧 Waybar、SwayNC、Fuzzel、Swaylock/Swayidle、Foot 配置及旧菜单脚本已移除；显示器、布局和快捷键由 DMS 模块管理。安装器不会清除用户机器上遗留的配置或脚本。
+
+桌面安装只将独立的 `screenshot.sh` 和 `update-system.sh` 放入 `~/.local/bin`；其他维护脚本应从完整项目的 `scripts/` 目录运行，避免丢失 `lib/` 依赖。`tests/fixtures/` 下看似内核或锁文件的内容只是测试用文本，不能当作缓存删除。
 
 - 仅支持 x86_64、UEFI 启动的 Arch Linux。
 - 基础安装默认使用整块磁盘：1 GiB ESP + 剩余空间 Btrfs。
